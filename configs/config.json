@@ -1,14 +1,13 @@
 {
   "model": {
-    "name": "efficientnet",
+    "name": "resnet50",
     "blocks": 0
   },
   "data": {
-    "class_num": 50,
-    "label_batch_size": 16,
-    "unlabel_batch_size": 64,
+    "class_num": 250,
     "shuffle_batch": 1000,
-    "img_size": 224
+    "img_size": 224,
+    "batch_size": 64
   },
   "trainer": {
     "kl_weight": 1,

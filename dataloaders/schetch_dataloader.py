@@ -9,7 +9,7 @@ class SchetchDataloader:
     def __init__(self, config: dict, tfrecord_path: str):
         self.tf_dataset = tf.data.TFRecordDataset(tfrecord_path)
         self.config = config
-        self.tf_dataset = self.tf_dataset.apply(tf.data.experimental.copy_to_device("/gpu:0"))
+        # self.tf_dataset = self.tf_dataset.apply(tf.data.experimental.copy_to_device("/gpu:0"))
         self.tf_dataset = self.tf_dataset.prefetch(buffer_size=tf.data.experimental.AUTOTUNE)
         self.tf_dataset = self.tf_dataset.shuffle(self.config.data.shuffle_batch)
         feature_description = get_feature_description()

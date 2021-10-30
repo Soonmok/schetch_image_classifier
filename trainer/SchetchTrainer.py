@@ -12,8 +12,10 @@ class SchetchTrainer:
         # define dataloader
         total_data_loader = SchetchDataloader(config=self.config,
                                               tfrecord_path=tf_record_path).tf_dataset
-        self.dev_data_loader = total_data_loader.take(1000)
-        self.train_data_loader = total_data_loader.skip(1000)
+        self.dev_data_loader = total_data_loader.take(10)
+        self.dev_data_loader = self.dev_data_loader.__iter__()
+        self.train_data_loader = total_data_loader.skip(10)
+        self.train_data_loader = self.train_data_loader.__iter__()
 
         # define losses and optimizer
         self.categorical_loss_object = tf.keras.losses.SparseCategoricalCrossentropy()
@@ -29,13 +31,16 @@ class SchetchTrainer:
 
         self.global_step = tf.Variable(1, name="global_step")
 
+        # degine image descriptor
+        self.define_image_descriptor()
+
     def define_image_descriptor(self):
         if self.config.model.name == "densenet":
-            self.descriptor = get_densenet(self.config, num_classes=50)
+            self.descriptor = get_densenet(self.config, num_classes=self.config.data.class_num)
         elif self.config.model.name == "resnet50":
-            self.descriptor = get_resnet50(self.config, num_classes=50)
+            self.descriptor = get_resnet50(self.config, num_classes=self.config.data.class_num)
         elif self.config.model.name == "nasnet":
-            self.descriptor = get_nasnet(self.config, num_classes=50)
+            self.descriptor = get_nasnet(self.config, num_classes=self.config.data.class_num)
         print(self.descriptor.summary())
 
     @tf.function
@@ -61,7 +66,7 @@ class SchetchTrainer:
         self.train_accuracy(y_train, y_pred)
         self.top_k_accuracy = evaluate_top_k_score(y_train, y_pred)
         self.map_accuracy = evaluate_map(y_train, y_pred)
-        self.global_step += 1
+        self.global_step.assign_add(1)
 
     def dev_step(self, x_dev, y_dev):
         y_pred = self.descriptor(x_dev, training=False)
@@ -75,8 +80,8 @@ class SchetchTrainer:
         self.test_map_accuracy(map_score)
 
     def train(self):
-        train_steps = 500 // self.config.data.label_batch_size
-        dev_steps = 3748 // self.config.data.label_batch_size
+        train_steps = 61
+        dev_steps = 10
         for epoch in range(self.config.trainer.epoch):
             for idx in range(train_steps):
                 x_train, y_train = next(self.train_data_loader)
