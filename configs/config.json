@@ -1,0 +1,24 @@
+{
+  "model": {
+    "name": "efficientnet",
+    "blocks": 0
+  },
+  "data": {
+    "class_num": 50,
+    "label_batch_size": 16,
+    "unlabel_batch_size": 64,
+    "shuffle_batch": 1000,
+    "img_size": 224
+  },
+  "trainer": {
+    "kl_weight": 1,
+    "kl_loss": false,
+    "epoch": 500,
+    "dropout": 0.5,
+    "tsa": false,
+    "tsa_schedule": "exp_schedule",
+    "classifier_loss": "basic",
+    "tau": 1,
+    "top_k": 5
+  }
+}
